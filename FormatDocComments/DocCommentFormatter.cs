@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Carl Reinke
+﻿// Copyright 2025 Carl Reinke
 //
 // This file is part of a library that is licensed under the terms of the GNU
 // Lesser General Public License Version 3 as published by the Free Software
@@ -125,7 +125,11 @@ namespace FormatDocComments
                 throw new ArgumentNullException(nameof(document));
 
             if (options == null)
+#if VS2017
                 options = document.Project.Solution.Workspace.Options;
+#else
+                options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
+#endif
 
             var formatter = new DocCommentFormatter(options);
 
@@ -157,7 +161,11 @@ namespace FormatDocComments
                 throw new ArgumentNullException(nameof(document));
 
             if (options == null)
+#if VS2017
                 options = document.Project.Solution.Workspace.Options;
+#else
+                options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
+#endif
 
             var formatter = new DocCommentFormatter(options);
 

@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Carl Reinke
+﻿// Copyright 2025 Carl Reinke
 //
 // This file is part of a library that is licensed under the terms of the GNU
 // Lesser General Public License Version 3 as published by the Free Software
@@ -8,6 +8,7 @@
 // names, trademarks, or service marks.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.VisualStudio.CodingConventions;
 using Microsoft.VisualStudio.Threading;
@@ -38,9 +39,17 @@ namespace FormatDocComments
 
         public async Task<Document> FormatDocCommentsInDocumentAsync(Document document, CancellationToken cancellationToken)
         {
+#if VS2017
             var options = document.Project.Solution.Workspace.Options;
+#else
+            var options = (OptionSet)await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
+#endif
+
             if (!options.GetOption(DocCommentFormattingOptions.WrapColumn).HasValue)
-                options = options.WithChangedOption(DocCommentFormattingOptions.WrapColumn, await GetGuideColumnAsync(document.FilePath, cancellationToken).ConfigureAwait(false));
+            {
+                int? guideColumn = await GetGuideColumnAsync(document.FilePath, cancellationToken).ConfigureAwait(false);
+                options = options.WithChangedOption(DocCommentFormattingOptions.WrapColumn, guideColumn);
+            }
 
             var changes = await DocCommentFormatter.FormatAsync(document, options, cancellationToken).ConfigureAwait(false);
 
@@ -51,9 +60,17 @@ namespace FormatDocComments
 
         public async Task<Document> FormatDocCommentsInSelectionAsync(Document document, TextSpan selectionSpan, CancellationToken cancellationToken)
         {
+#if VS2017
             var options = document.Project.Solution.Workspace.Options;
+#else
+            var options = (OptionSet)await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
+#endif
+
             if (!options.GetOption(DocCommentFormattingOptions.WrapColumn).HasValue)
-                options = options.WithChangedOption(DocCommentFormattingOptions.WrapColumn, await GetGuideColumnAsync(document.FilePath, cancellationToken).ConfigureAwait(false));
+            {
+                int? guideColumn = await GetGuideColumnAsync(document.FilePath, cancellationToken).ConfigureAwait(false);
+                options = options.WithChangedOption(DocCommentFormattingOptions.WrapColumn, guideColumn);
+            }
 
             var changes = await DocCommentFormatter.FormatAsync(document, selectionSpan, options, cancellationToken).ConfigureAwait(false);
 
