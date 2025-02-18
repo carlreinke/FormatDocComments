@@ -95,14 +95,14 @@ namespace FormatDocComments
 
         private BreakMode _breakMode;
 
-        private DocCommentFormatter(OptionSet options)
+        private DocCommentFormatter(OptionSet options, string language)
         {
             _options = options;
 
-            _useTabs = _options.GetOption(FormattingOptions.UseTabs, LanguageNames.CSharp);
-            _tabSize = _options.GetOption(FormattingOptions.TabSize, LanguageNames.CSharp);
-            _indentSize = _options.GetOption(FormattingOptions.IndentationSize, LanguageNames.CSharp);
-            _newLine = _options.GetOption(FormattingOptions.NewLine, LanguageNames.CSharp) ?? Environment.NewLine;
+            _useTabs = _options.GetOption(FormattingOptions.UseTabs, language);
+            _tabSize = _options.GetOption(FormattingOptions.TabSize, language);
+            _indentSize = _options.GetOption(FormattingOptions.IndentationSize, language);
+            _newLine = _options.GetOption(FormattingOptions.NewLine, language) ?? Environment.NewLine;
 
             _wrapColumn = _options.GetOption(DocCommentFormattingOptions.WrapColumn) ?? _defaultWrapColumn;
         }
@@ -131,9 +131,9 @@ namespace FormatDocComments
                 options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
 #endif
 
-            var formatter = new DocCommentFormatter(options);
-
             var rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+
+            var formatter = new DocCommentFormatter(options, rootNode.Language);
 
             foreach (var node in DocCommentFinder.FindNodes(rootNode))
                 formatter.Format(node, cancellationToken);
@@ -167,9 +167,9 @@ namespace FormatDocComments
                 options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
 #endif
 
-            var formatter = new DocCommentFormatter(options);
-
             var rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+
+            var formatter = new DocCommentFormatter(options, rootNode.Language);
 
             foreach (var node in DocCommentFinder.FindNodes(rootNode, span))
                 formatter.Format(node, cancellationToken);
@@ -195,8 +195,10 @@ namespace FormatDocComments
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            var formatter = new DocCommentFormatter(options);
+            var formatter = new DocCommentFormatter(options, node.Language);
+
             formatter.Format(node, cancellationToken);
+
             return formatter._changes;
         }
 
