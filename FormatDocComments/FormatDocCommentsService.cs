@@ -39,11 +39,7 @@ namespace FormatDocComments
 
         public async Task<Document> FormatDocCommentsInDocumentAsync(Document document, CancellationToken cancellationToken)
         {
-#if VS2017
-            var options = document.Project.Solution.Workspace.Options;
-#else
             var options = (OptionSet)await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
-#endif
 
             if (!options.GetOption(DocCommentFormattingOptions.WrapColumn).HasValue)
             {
@@ -60,11 +56,7 @@ namespace FormatDocComments
 
         public async Task<Document> FormatDocCommentsInSelectionAsync(Document document, TextSpan selectionSpan, CancellationToken cancellationToken)
         {
-#if VS2017
-            var options = document.Project.Solution.Workspace.Options;
-#else
             var options = (OptionSet)await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
-#endif
 
             if (!options.GetOption(DocCommentFormattingOptions.WrapColumn).HasValue)
             {

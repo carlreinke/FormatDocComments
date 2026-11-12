@@ -4,8 +4,5 @@
     <File Path="Directory.Build.props" />
   </Folder>
   <Project Path="FormatDocComments.Tests/FormatDocComments.Tests.csproj" />
-  <Project Path="FormatDocComments.Vsix.2017/FormatDocComments.Vsix.2017.csproj" />
-  <Project Path="FormatDocComments.Vsix.2019/FormatDocComments.Vsix.2019.csproj" />
-  <Project Path="FormatDocComments.Vsix.2022/FormatDocComments.Vsix.2022.csproj" />
-  <Project Path="FormatDocComments/FormatDocComments.shproj" />
+  <Project Path="FormatDocComments/FormatDocComments.csproj" />
 </Solution>

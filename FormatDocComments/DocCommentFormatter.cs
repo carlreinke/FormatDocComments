@@ -125,11 +125,7 @@ namespace FormatDocComments
                 throw new ArgumentNullException(nameof(document));
 
             if (options == null)
-#if VS2017
-                options = document.Project.Solution.Workspace.Options;
-#else
                 options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
-#endif
 
             var rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
@@ -161,11 +157,7 @@ namespace FormatDocComments
                 throw new ArgumentNullException(nameof(document));
 
             if (options == null)
-#if VS2017
-                options = document.Project.Solution.Workspace.Options;
-#else
                 options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
-#endif
 
             var rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
