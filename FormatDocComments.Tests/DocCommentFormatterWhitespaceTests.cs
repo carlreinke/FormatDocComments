@@ -12,7 +12,7 @@ using static FormatDocComments.Tests.DocCommentFormatterTests;
 
 namespace FormatDocComments.Tests
 {
-    public class DocCommentFormatterWhitepaceTests
+    public class DocCommentFormatterWhitespaceTests
     {
         [Fact]
         public void TestEmpty()
