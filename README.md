@@ -25,7 +25,7 @@ The extension also adds a code cleanup fixer.
 The formatting style is currently non-configurable.
 
 The word wrap column can be configured by setting the `max_line_length` or
-`guidelines` editorconfig properties or by setting a text editor guideline using
+`rulers` editorconfig properties or by setting a text editor guideline using
 the [Editor Guidelines] extension.  If nothing is set then it defaults to 80
 columns.
 

@@ -77,7 +77,7 @@ public class C { }";
                 .WithChangedOption(DocCommentFormattingOptions.WrapColumn, 40));
         }
 
-        internal static void AssertFormat(string expectedText, string inputText, Func<OptionSet, OptionSet> updateOptions = null)
+        internal static void AssertFormat(string expectedText, string inputText, Func<OptionSet, OptionSet>? updateOptions = null)
         {
             var workspace = new AdhocWorkspace();
             var solution = workspace.CurrentSolution;
@@ -96,7 +96,7 @@ public class C { }";
             Assert.Equal(expectedText, outputText);
         }
 
-        internal static void AssertFormat(string expectedText, string inputText, TextSpan span, Func<OptionSet, OptionSet> updateOptions = null)
+        internal static void AssertFormat(string expectedText, string inputText, TextSpan span, Func<OptionSet, OptionSet>? updateOptions = null)
         {
             var workspace = new AdhocWorkspace();
             var solution = workspace.CurrentSolution;

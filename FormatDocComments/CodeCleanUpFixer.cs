@@ -103,7 +103,7 @@ namespace FormatDocComments
             return await FixAsync(document, context).ConfigureAwait(false);
         }
 
-        private Project GetProjectByHierarchy(IVsHierarchy hierarchy)
+        private Project? GetProjectByHierarchy(IVsHierarchy hierarchy)
         {
             foreach (var project in _workspace.CurrentSolution.Projects)
                 if (_workspace.GetHierarchy(project.Id) == hierarchy)
@@ -112,7 +112,7 @@ namespace FormatDocComments
             return null;
         }
 
-        private Document GetDocumentByHierarchyAndPath(IVsHierarchy hierarchy, string filePath)
+        private Document? GetDocumentByHierarchyAndPath(IVsHierarchy hierarchy, string filePath)
         {
             var documentIds = _workspace.CurrentSolution.GetDocumentIdsWithFilePath(filePath);
 
@@ -138,7 +138,7 @@ namespace FormatDocComments
 
             for (int i = 0; i < projectIds.Count; ++i)
             {
-                var project = solution.GetProject(projectIds[i]);
+                var project = solution.GetProject(projectIds[i])!;
 
                 reportProgress(project.Name, i, projectIds.Count);
 
@@ -170,7 +170,7 @@ namespace FormatDocComments
 
             for (int i = 0; i < documentIds.Count; ++i)
             {
-                var document = project.GetDocument(documentIds[i]);
+                var document = project.GetDocument(documentIds[i])!;
 
                 reportProgress(document.Name, i, documentIds.Count);
 
@@ -211,7 +211,7 @@ namespace FormatDocComments
             {
                 return await applyFixAsync(value, ReportProgress, context, scope.Context.UserCancellationToken).ConfigureAwait(false);
 
-                void ReportProgress(string description, int completedItems, int totalItems)
+                void ReportProgress(string? description, int completedItems, int totalItems)
                 {
                     scope.Description = description;
                     scope.Progress.Report(new Microsoft.VisualStudio.Utilities.ProgressInfo(completedItems, totalItems));
@@ -227,6 +227,6 @@ namespace FormatDocComments
             return document;
         }
 
-        private delegate void ReportProgress(string description, int completedItems, int totalItems);
+        private delegate void ReportProgress(string? description, int completedItems, int totalItems);
     }
 }

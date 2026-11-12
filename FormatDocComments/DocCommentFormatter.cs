@@ -16,6 +16,7 @@ using Microsoft.CodeAnalysis.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,13 +78,13 @@ namespace FormatDocComments
 
         private readonly StringBuilder _stringBuilder = new StringBuilder();
 
-        private SourceText _text;
+        private SourceText _text = null!;
 
         private int _column;
 
         private int _exteriorIndent;
 
-        private string _interiorLinePrefix;
+        private string? _interiorLinePrefix;
 
         private int _preserve;
 
@@ -119,7 +120,7 @@ namespace FormatDocComments
         /// <returns>The changes that will format the documentation comments.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="document"/> is
         ///     <see langword="null"/>.</exception>
-        public static async Task<IList<TextChange>> FormatAsync(Document document, OptionSet options = null, CancellationToken cancellationToken = default)
+        public static async Task<IList<TextChange>> FormatAsync(Document document, OptionSet? options = null, CancellationToken cancellationToken = default)
         {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
@@ -128,6 +129,8 @@ namespace FormatDocComments
                 options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
 
             var rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            if (rootNode == null)
+                return Array.Empty<TextChange>();
 
             var formatter = new DocCommentFormatter(options, rootNode.Language);
 
@@ -151,7 +154,7 @@ namespace FormatDocComments
         /// <returns>The changes that will format the documentation comments.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="document"/> is
         ///     <see langword="null"/>.</exception>
-        public static async Task<IList<TextChange>> FormatAsync(Document document, TextSpan span, OptionSet options = null, CancellationToken cancellationToken = default)
+        public static async Task<IList<TextChange>> FormatAsync(Document document, TextSpan span, OptionSet? options = null, CancellationToken cancellationToken = default)
         {
             if (document == null)
                 throw new ArgumentNullException(nameof(document));
@@ -160,6 +163,8 @@ namespace FormatDocComments
                 options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
 
             var rootNode = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            if (rootNode == null)
+                return Array.Empty<TextChange>();
 
             var formatter = new DocCommentFormatter(options, rootNode.Language);
 
@@ -231,7 +236,7 @@ namespace FormatDocComments
                 }
                 case SyntaxKind.MultiLineDocumentationCommentTrivia:
                 {
-                    string whitespace = null;
+                    string? whitespace = null;
 
                     // Check for a matching whitespace prefix on every line after the first.
                     foreach (var token in node.DescendantTokens())
@@ -245,7 +250,7 @@ namespace FormatDocComments
                             if (!node.Span.Contains(nextToken.Span))
                                 break;
 
-                            string text;
+                            string? text;
 
                             if (!TryGetLiteralText(nextToken, out text))
                                 return string.Empty;
@@ -278,7 +283,7 @@ namespace FormatDocComments
 
             bool TryGetFirstChar(SyntaxToken token, out char c)
             {
-                string text;
+                string? text;
 
                 if (!TryGetLiteralText(token, out text) ||
                     text.Length < 1)
@@ -291,7 +296,7 @@ namespace FormatDocComments
                 return true;
             }
 
-            bool TryGetLiteralText(SyntaxToken token, out string text)
+            bool TryGetLiteralText(SyntaxToken token, [NotNullWhen(true)] out string? text)
             {
                 if (token.Kind() != SyntaxKind.XmlTextLiteralToken)
                 {
@@ -329,7 +334,7 @@ namespace FormatDocComments
                 Debug.Assert(change.Span.End <= span.End);
                 Debug.Assert(change.NewText != null);
 
-                int newTextLength = change.NewText.Length;
+                int newTextLength = change.NewText!.Length;
 
                 if (change.Span.Length == 0 && newTextLength == 0)
                     continue;
@@ -920,7 +925,7 @@ namespace FormatDocComments
                 AddTrivia(token.TrailingTrivia);
         }
 
-        private void AddBreak(TextSpan span, string text = null)
+        private void AddBreak(TextSpan span, string? text = null)
         {
             Debug.Assert(span.Start >= _wordEnd);
 
@@ -973,7 +978,7 @@ namespace FormatDocComments
             // Calculate the length of the word.
             int wordNewTextLength = _wordEnd - _wordStart;
             foreach (var change in _wordChanges)
-                wordNewTextLength += change.NewText.Length - change.Span.Length;
+                wordNewTextLength += change.NewText!.Length - change.Span.Length;
 
             // Construct the break.
             string breakNewText = BuildBreakText(wordNewTextLength);
@@ -1202,7 +1207,7 @@ namespace FormatDocComments
                 return syntaxWalker._nodes;
             }
 
-            public override void Visit(SyntaxNode node)
+            public override void Visit(SyntaxNode? node)
             {
                 if (node != null)
                 {

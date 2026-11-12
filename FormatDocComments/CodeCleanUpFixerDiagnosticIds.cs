@@ -24,7 +24,7 @@ namespace FormatDocComments
         [LocalizedName(typeof(CodeCleanUpFixerResources), nameof(CodeCleanUpFixerResources.FormatDocComments))]
         [ExportMetadata("EnableByDefault", true)]
         [ContentType("CSharp")]
-        public static readonly FixIdDefinition FormatDocComments;
+        public static readonly FixIdDefinition FormatDocComments = null!;
 
 #pragma warning restore CS0649 // Field is never assigned to, and will always have its default value
     }
